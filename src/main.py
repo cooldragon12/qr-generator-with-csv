@@ -1,8 +1,8 @@
 from queue import Queue
 from time import sleep
 from data_reader.readers import get_data_csv
-from qr_requestor.main import qr_generator
-from settings import OUTPUT_LOCATION
+from qr import qr_generator
+from settings import OUTPUT_LOCATION, file_path
 from log import printProgressBar
 
 
@@ -28,7 +28,7 @@ def main():
 
     # After Getting the Raw data from a csv , More Specifically at email column
     # NOTE: This can be change
-    data = get_data_csv(file_path="./GEStaff.csv", to_get="GE Email")
+    data = get_data_csv(file_path=file_path, to_get="GE Email")
 
     # We will remove any extensions at the email, only to get the name
     # By using splitting
@@ -59,5 +59,5 @@ def main():
     
     
 
-    
-main()
+if __name__ == "main":
+    main()

@@ -18,5 +18,8 @@ QR_Background_Color = 'white'
 # Specify the path here
 qr_image = 'src/assets/default.png'
 
+# List or Array of Data to Iterate / File to use
+file_path = "./GEStaff.csv"
+
 # Exported Qr Code path
 OUTPUT_LOCATION = "src/export/"
