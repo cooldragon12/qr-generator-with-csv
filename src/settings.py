@@ -1,5 +1,8 @@
+import pathlib
+from os import path
+# Base Path
+BASE_PATH = pathlib.Path(__file__).parent.absolute()
 # Here is the configuration of the QR code
-
 # The Size of image indicated here not the Main qr code
 QR_Image_Size = 150
 
@@ -14,6 +17,9 @@ QR_Color = 'black' # This can be a word or hex value
 # Set your background color here
 QR_Background_Color = 'white'
 
+# Usually Empty
+QR_Prefix ="https://gulamanentertainment.com/link/"
+
 # Image to insert in the QR Code
 # Specify the path here
 qr_image = 'src/assets/default.png'
@@ -22,4 +28,6 @@ qr_image = 'src/assets/default.png'
 file_path = "./GEStaff.csv"
 
 # Exported Qr Code path
-OUTPUT_LOCATION = "src/export/"
+OUTPUT_LOCATION = path.join(BASE_PATH.parent, "export")
+
+LOG_FILE = "logs/qr.log"

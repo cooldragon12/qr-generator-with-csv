@@ -1,63 +1,59 @@
-from queue import Queue
-from time import sleep
-from data_reader.readers import get_data_csv
-from qr import qr_generator
-from settings import OUTPUT_LOCATION, file_path
-from log import printProgressBar
+from helpers.exceptions import DirectoryNotFoundError, FileNotFoundError
+from qr.generator import QRGenerator
+from helpers.parser import parse_args
+from helpers.validators import check_if_file_exists
+from settings import LOG_FILE as LOGS_LOCATION
+import logging.config
+import logging
+from os import path
+
+logging.config.fileConfig(
+    fname=path.join(path.dirname(path.dirname(path.abspath(__file__))), "config\\logging_config.ini"),
+    defaults={
+        "logfilename": LOGS_LOCATION
+    },
+    disable_existing_loggers=False,
+    encoding="utf-8"
+    )
+logger = logging.getLogger()
 
 
-
-q = Queue()
-q.maxsize = 100
-# Enqueue the datas
-def insert_data(data):
-    for i in data:
-        print(f"Enqueue: {i}")
-        # sleep(.5)
-        q.put(i)
-
-def main():
+def main(args):
     # Let's give a little message that the program is running
-    print(
-'''===========================================
+    logger.info(
+'''
+===========================================
 =     WELCOME LET's MAkE YOUR QR          =
 =                                         =
 =       Created by: GE WebDue3s           =
-==========================================='''
+===========================================
+'''
     )
+    try:
+        # Let's check if the user wants to insert a logo in the qr code
+        if args.logo is None:
+            # Let's check if the user wants to insert a logo in the qr code
+            qr = QRGenerator(args.data)
+        else:
+            # Let's generate the qr code
+            qr = QRGenerator(args.data, logo=args.logo)
 
-    # After Getting the Raw data from a csv , More Specifically at email column
-    # NOTE: This can be change
-    data = get_data_csv(file_path=file_path, to_get="GE Email")
 
-    # We will remove any extensions at the email, only to get the name
-    # By using splitting
-    data = data.str.split('.', expand=True)
-
-    # then we will slect only the names which is index zero
-    names = data[0].tolist()
-    size_inqueue = len(names)
-    # After that we will use Queue package to manage multiple requests
-    insert_data(names)
-
-    # Then we will start the queue of each name, which each name will added in the payload
-    # Execute the request for each names.
-    printProgressBar(0, q.unfinished_tasks, prefix = 'Progress:', suffix = 'Complete', length = 50)
-    while True:
-        if q.empty():
-            return;
-        data = q.get()
-        
-        printProgressBar( size_inqueue- q.qsize(), size_inqueue, prefix = 'Progress:', suffix = 'Complete - '+data, length = 50)
-        # Generate the Qr Code
-        generated = qr_generator(data="https://gulamanentertainment.com/link/"+data)
-        
-        generated.save(f'{OUTPUT_LOCATION}{data}.png')
-
-        sleep(1)
-        
+        for data in qr.start_generate():
+            if not check_if_file_exists(path.join(qr.output, f'{data}.png')):
+                raise FileNotFoundError(f'QR Code Generation Failed: {data}')
+            else:
+                logger.info(f'QR Code Generated: {data}')
+        logger.info(f'QR Codes has been saved in this location: {qr.output}')
+        logger.info("QR Code Generation Completed")
     
-    
+    except Exception as e:
+        logger.error(e, exc_info=True)
 
-if __name__ == "main":
-    main()
+    logger.info("Exiting Program")
+
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    main(args)

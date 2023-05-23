@@ -2,6 +2,6 @@
 
 *.csv
 
-*/export
+**/export
 
 **/env

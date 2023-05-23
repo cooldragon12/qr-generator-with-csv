@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "task":[
+        {
+            "label": "Generate Qr Code",
+            "type": "shell",
+            "command": "py ./src/main.py --data ${inputs.data}"
+        },
+        {
+            "label": "Generate Qr Code in specified location",
+            "type": "shell",
+            "command": "py ./src/main.py --data ${inputs.data} --output ${inputs.output}"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "Generate QR Code",
+            "description": "Data to be encoded in Qr Code",
+            "type": "promptString"
+        },
+        {
+            "id": "generate_with_location",
+            "description": "Generate QR code in specified Output location",
+            "type": "promptString",
+            "default": ".\\export"
+        }
+    ]
+}
